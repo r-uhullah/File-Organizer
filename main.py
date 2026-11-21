@@ -57,8 +57,8 @@ def main():
         {}
     )  # stores the list of file types from the scan_file_signiture function
     scanned_data = (
-        {}
-    )  # saving the data that comes from the scanner function (for optimization)
+        None  # saving the data that comes from the scanner function (for optimization)
+    )
     scanned_folder = None  # to check if the user has already scanned the folder he is trying to if yes then scanned_data is used insted of scanning (for optimization)
 
     # keeps showing the menu until the user exits the program
@@ -78,7 +78,7 @@ def main():
                 # reseting the data if the folder is changed
                 folder_path = selected_path
                 scanned_data = None
-                identified_file_type = {}
+                identified_file_type = None
                 scanned_folder = None
                 print(folder_path)
             else:
@@ -144,7 +144,7 @@ def main():
                 scanned_data = None
                 print("Scanning the folder...")
                 scanned_data = scan_folder(folder_path)
-                scanned_folder = folder_path
+                scanned_folder = Path(folder_path).resolve()
 
             print("Finding dublicates...")  # Loading message
 
@@ -179,15 +179,15 @@ def main():
             if not destination_folder:
                 print("No destination folder selected. Try again.")
                 continue
-            if not scanned_data or not already_scanned(folder_path, scanned_folder):
+            if scanned_data is None or not already_scanned(folder_path, scanned_folder):
                 scanned_data = None
-                identified_file_type = {}
+                identified_file_type = None
                 print("Scanning...")
                 scanned_data = scan_folder(folder_path)
                 scanned_folder = Path(folder_path).resolve()
 
             if not identified_file_type:
-                identified_file_type = {}
+                identified_file_type = None
                 print("Identifying type of file...")
                 identified_file_type = scan_file_signiture(scanned_data)
             print("Creating a plan...")

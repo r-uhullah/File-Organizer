@@ -206,6 +206,17 @@ def main():
                     branch = "└──" if i == len(files) - 1 else "├──"
                     print(f"\t{branch} {file.relative_to(Path(folder_path))}")
 
+            # asking the user for conformation to make changes to the folder
+            user_conformation = None
+            try:
+                while True:
+                    user_conformation = str(input("Conform this plan: (y/n)"))
+
+                    if user_conformation == "y" or user_conformation == "n":
+                        break
+            except OSError as error:
+                print(f"Invalid input!: {error}")
+
         elif user_choice == 5:
             print("Option 5")
         elif user_choice == 6:

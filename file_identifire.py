@@ -1,5 +1,3 @@
-from pathlib import Path
-
 FILE_SIGNATURES = {
     # Images
     "JPEG": [b"\xFF\xD8\xFF"],
@@ -44,38 +42,21 @@ def identify_file_type(file_signiture, file_item, results_dict):
             return
 
     # appending the file to the unknown if none of the signitures match
-    results_dict.setdefault("Unknown", []).append(file_item.name)
+    results_dict.setdefault("Unknown", []).append(file_item)
 
 
-def scan_file_signiture(folder_path):
-    folder = Path(folder_path)
-    # to store the values and then send the final result
+def scan_file_signiture(
+    file_list,
+):  # getting the already saved file from the main so that no new folder is scanned without any reason
     results_dict = {}
-    # looping over the whole folder
-    for item in folder.rglob("*"):
-        # skiping if a folder is found
-        if not item.is_file():
-            continue
-
+    for item in file_list:
         try:
             # reading the signiture of the file
             with open(item, "rb") as file:
                 signiture = file.read(16)
                 # calling the identify_file_type function to check the file type and append it to the result_dict
                 identify_file_type(signiture, item, results_dict)
-        except PermissionError as error:
-            print(f"Could not read {item.name}: {error}")
-        except FileNotFoundError as error:
-            print(f"Could not read {item.name}: {error}")
         except OSError as error:
             print(f"Could not read {item.name}: {error}")
 
     return results_dict
-
-
-# found_files = scan_file_signiture(
-#     r"C:\Users\user\Desktop\Code\Python\Practice\File Manger"
-# )
-# print(f"Files found: {sum(len(files) for files in found_files.values())}")
-# for f_type, files in found_files.items():
-#     print(f"{files} --> {f_type}")

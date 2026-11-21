@@ -1,16 +1,17 @@
-from pathlib import Path
-
-from hasher import calculate_hash
+from hasher import calculate_hash  # calculates the hash of a single file
 
 
-def find_dublicate(file_path):
-    folder = Path(file_path)
-    saved_hashes = {}
+def find_dublicate(files_list):
+    saved_hashes = (
+        {}
+    )  # to save the list of all the hashes with there files in a list if there are diplicates
 
-    for item in folder.rglob("*"):
-        if not item.is_file():
-            continue
-        file_hash = calculate_hash(item)
+    for (
+        item
+    ) in (
+        files_list
+    ):  # looping through the file list whcih is saved in the main after scanning the folder
+        file_hash = calculate_hash(item)  # calculating the hash of the file
 
         if file_hash is None:
             continue
@@ -19,7 +20,12 @@ def find_dublicate(file_path):
 
     duplicates = []
 
-    for file_hash, files in saved_hashes.items():
+    for (
+        file_hash,
+        files,
+    ) in (
+        saved_hashes.items()
+    ):  # looping through the saved_hashes object to see if there is any hash with more then one file to its name if yes its added to the duplicate list
         if len(files) > 1:
             duplicates.append(files)
     return duplicates

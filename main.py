@@ -1,12 +1,15 @@
+from duplicate_finder import find_dublicate
+from file_identifire import (
+    scan_file_signiture,  # to scan for the file extention using signiture
+)
 from folder_selector import select_folder  # to show the folder selection window
 from scanner import (
-    scan_folder,
-)  # to scan the selected folder and get a list of all the files in it
-from file_identifire import scan_file_signiture
+    scan_folder,  # to scan the selected folder and get a list of all the files in it
+)
 
 
 def show_menu():
-    print("==============================")
+    print("\n==============================")
     print("  INTELLIGENT FILE ORGANIZER")
     print("==============================")
 
@@ -38,6 +41,7 @@ def show_menu():
 def main():
     # making folder_path avaliable for the main cause it need to used by all of the other option
     folder_path = None
+    identified_file_type = {}
 
     # keeps showing the menu until the user exits the program
     while True:
@@ -60,18 +64,46 @@ def main():
             if folder_path is None or folder_path == "":
                 print("Select a folder before performing any action")
                 continue
-            # showing that the scanning has started if it takes time
+            # showing that the scanning and identification has started if it takes time
             print("Scanning...")
             scanned_data = scan_folder(folder_path)
+            print("Identifying type of file...")
             identified_file_type = scan_file_signiture(folder_path)
-            print("\nFiles found: ", len(scanned_data))
+            print("\n==============================")
+            print("        Scanned Report")
+            print("==============================")
+            print(f"Files found: {len(scanned_data)}\n")
+
+            for file_type, files in identified_file_type.items():
+                print(f"{file_type} files: {len(files)}")
+            print()
 
             # file.relative_to(folder_path) displays the subfolder too with the file
             for index, file in enumerate(scanned_data, start=1):
                 print(f"{index}. {file.name}")
 
         elif user_choice == 3:
-            print("Option 3")
+            if folder_path is None or folder_path == "":
+                print("Select a folder before performing any action")
+                continue
+
+            print("\nFinding dublicates...")
+            duplicate_list = find_dublicate(folder_path)
+            print("\n==============================")
+            print("      Duplicate Report")
+            print("==============================")
+            print(f"Dublicates found: {len(duplicate_list)}")
+
+            for index, duplicate in enumerate(duplicate_list, start=1):
+                print(f"{index} :->")
+                for i, file in enumerate(duplicate):
+                    clean_path = file.relative_to(folder_path)
+
+                    # Use └── for the very last item in the tree, ├── for others
+                    branch = "└──" if i == len(duplicate) - 1 else "├──"
+
+                    print(f"  {branch} {file.name} ({clean_path})")
+
         elif user_choice == 4:
             print("Option 4")
         elif user_choice == 5:

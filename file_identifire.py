@@ -14,9 +14,6 @@ FILE_SIGNATURES = {
     "RTF": [b"{\\rtf"],
     # ZIP-based formats (need additional inspection to distinguish)
     "ZIP": [b"PK\x03\x04"],
-    "DOCX": [b"PK\x03\x04"],
-    "XLSX": [b"PK\x03\x04"],
-    "PPTX": [b"PK\x03\x04"],
     # Archives
     "RAR": [b"Rar!\x1A\x07"],
     "7Z": [b"7z\xBC\xAF\x27\x1C"],
@@ -43,7 +40,7 @@ def identify_file_type(file_signiture, file_item, results_dict):
         # startswith() only works on typle or bytes not lists
         if file_signiture.startswith(tuple(signiture)):
             # appending the value to the results_dictionary if a file type is found
-            results_dict.setdefault(file_type, []).append(file_item.name)
+            results_dict.setdefault(file_type, []).append(file_item)
             return
 
     # appending the file to the unknown if none of the signitures match
@@ -66,8 +63,12 @@ def scan_file_signiture(folder_path):
                 signiture = file.read(16)
                 # calling the identify_file_type function to check the file type and append it to the result_dict
                 identify_file_type(signiture, item, results_dict)
-        except PermissionError:
-            print(f"{item.name}: Error")
+        except PermissionError as error:
+            print(f"Could not read {item.name}: {error}")
+        except FileNotFoundError as error:
+            print(f"Could not read {item.name}: {error}")
+        except OSError as error:
+            print(f"Could not read {item.name}: {error}")
 
     return results_dict
 

@@ -5,6 +5,9 @@ from file_identifire import (
     scan_file_signiture,  # to scan for the file extention using signiture
 )
 from folder_selector import select_folder  # to show the folder selection window
+from organizer import (
+    create_organization_plan,  # to compare the files with the identifies_file_type and create a plan to seprate it into different folders
+)
 from scanner import (
     scan_folder,  # to scan the selected folder and get a list of all the files in it
 )
@@ -137,12 +140,14 @@ def main():
             if folder_path is None or folder_path == "":
                 print("Select a folder before performing any action")
                 continue
-            if scanned_data is None or already_scanned(folder_path, scanned_folder):
+            if scanned_data is None or not already_scanned(folder_path, scanned_folder):
+                scanned_data = None
                 print("Scanning the folder...")
                 scanned_data = scan_folder(folder_path)
                 scanned_folder = folder_path
 
             print("Finding dublicates...")  # Loading message
+
             duplicate_list = find_dublicate(
                 scanned_data
             )  # storing the data in dublicate_list
@@ -165,8 +170,42 @@ def main():
 
                     print(f"  {branch} {file.name} ({clean_path})")
 
+        # to give an orgainzation plan
         elif user_choice == 4:
-            print("Option 4")
+            if not folder_path:
+                print("Select a folder before performing any action")
+                continue
+            destination_folder = select_folder()
+            if not destination_folder:
+                print("No destination folder selected. Try again.")
+                continue
+            if not scanned_data or not already_scanned(folder_path, scanned_folder):
+                scanned_data = None
+                identified_file_type = {}
+                print("Scanning...")
+                scanned_data = scan_folder(folder_path)
+                scanned_folder = Path(folder_path).resolve()
+
+            if not identified_file_type:
+                identified_file_type = {}
+                print("Identifying type of file...")
+                identified_file_type = scan_file_signiture(scanned_data)
+            print("Creating a plan...")
+            organization_plan = create_organization_plan(
+                identified_file_type, destination_folder
+            )
+
+            print("\n==============================")
+            print("       Organization Plan")
+            print("==============================")
+
+            for destination_path, files in organization_plan.items():
+                print(f"\n📁{destination_path.name}/ {len(files)} files.")
+
+                for i, file in enumerate(files):
+                    branch = "└──" if i == len(files) - 1 else "├──"
+                    print(f"\t{branch} {file.relative_to(Path(folder_path))}")
+
         elif user_choice == 5:
             print("Option 5")
         elif user_choice == 6:

@@ -29,8 +29,8 @@ def calculate_hash(file_path):
     except PermissionError as error:
         print(f"{target_file.name} Error: {error}")
         logger.error(f"Couldn't hash - file: {file_path}")
-        return False
+        return None
     except OSError as error:
         print(f"{target_file.name} Error: {error}")
         logger.error(f"Couldn't hash - file: {file_path}")
-        return False
+        return None

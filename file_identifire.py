@@ -62,5 +62,6 @@ def scan_file_signiture(
                 identify_file_type(signiture, item, results_dict)
         except OSError as error:
             print(f"Could not read {item.name}: {error}")
+            logger.error(f"Error reading file - {item.name}")
 
     return results_dict

@@ -6,7 +6,6 @@ logger = logging.getLogger(__name__)
 
 
 def move_file(source, destination):
-    logger.info(f"Started to move flie - {source} to destination - {destination}")
     source = Path(source)
     destination = Path(destination)
 
@@ -25,9 +24,6 @@ def move_file(source, destination):
             target = destination / f"{source.stem}_{counter}{source.suffix}"
             counter += 1
         shutil.move(str(source), str(target))
-        logger.info(
-            f"Sucessfully moved the file - {source} to destination - {destination}"
-        )
         return True
     except OSError as error:
         print(f"Error moving {source.name}! {error}")

@@ -16,8 +16,7 @@ def scan_folder(folder_path):
 
         path_objects.append(item)
 
-    logger.info(
-        f"Scanning Finished - folder: {folder_path}\nTotal files scanned {len(path_objects)}"
-    )
+    logger.info(f"Scanning Finished - folder: {folder_path}")
+    logger.info(f"Total files scanned {len(path_objects)}")
 
     return path_objects

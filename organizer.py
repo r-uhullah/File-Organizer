@@ -1,4 +1,7 @@
+import logging
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 FILE_CATEGORIES = {
     "JPEG": "Images",
@@ -28,6 +31,7 @@ FILE_CATEGORIES = {
 
 
 def create_organization_plan(identified_files, destination_folder):
+    logger.info("Organization plan Started")
     organization_plan = {}
 
     for file_type, files in identified_files.items():
@@ -37,4 +41,5 @@ def create_organization_plan(identified_files, destination_folder):
 
         organization_plan.setdefault(destination_path, []).extend(files)
 
+    logger.info("Organizatoin plan created")
     return organization_plan

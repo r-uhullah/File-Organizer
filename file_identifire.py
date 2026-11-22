@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 FILE_SIGNATURES = {
     # Images
     "JPEG": [b"\xFF\xD8\xFF"],

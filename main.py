@@ -1,11 +1,17 @@
+import logging
 from pathlib import Path
 
 from duplicate_finder import find_dublicate
 from file_identifire import scan_file_signiture
 from file_operations import move_file
 from folder_selector import select_folder
+from logger import setup_log
 from organizer import create_organization_plan
 from scanner import scan_folder
+
+setup_log()
+
+logger = logging.getLogger(__name__)
 
 
 def already_scanned(current_folder, scanned_folder):
@@ -124,6 +130,7 @@ def main():
 
             if selected_path:
                 folder_path = selected_path
+                logger.info(f"Selected Folder - {folder_path}")
                 scanned_data = None
                 identified_file_type = None
                 duplicate_list = None

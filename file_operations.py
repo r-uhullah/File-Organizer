@@ -1,8 +1,12 @@
+import logging
 import shutil
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
 
 def move_file(source, destination):
+    logger.info(f"Started to move flie - {source} to destination - {destination}")
     source = Path(source)
     destination = Path(destination)
 
@@ -10,6 +14,7 @@ def move_file(source, destination):
         destination.mkdir(parents=True, exist_ok=True)
     except OSError as error:
         print(f"Error in {destination}: {error}")
+        logger.error(f"Failed to create a folder at - {destination}")
         return False
 
     target = destination / source.name
@@ -20,7 +25,11 @@ def move_file(source, destination):
             target = destination / f"{source.stem}_{counter}{source.suffix}"
             counter += 1
         shutil.move(str(source), str(target))
+        logger.info(
+            f"Sucessfully moved the file - {source} to destination - {destination}"
+        )
         return True
     except OSError as error:
         print(f"Error moving {source.name}! {error}")
+        logger.error(f"Failed to move file - {source}")
         return False

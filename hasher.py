@@ -1,5 +1,8 @@
 import hashlib
+import logging
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 def calculate_hash(file_path):
@@ -21,10 +24,13 @@ def calculate_hash(file_path):
                 hasher.update(
                     chunk
                 )  # adding the chunks to the hasher without loosing anything
+
         return hasher.hexdigest()
     except PermissionError as error:
         print(f"{target_file.name} Error: {error}")
-        return None
+        logger.error(f"Couldn't hash - file: {file_path}")
+        return False
     except OSError as error:
         print(f"{target_file.name} Error: {error}")
-        return None
+        logger.error(f"Couldn't hash - file: {file_path}")
+        return False

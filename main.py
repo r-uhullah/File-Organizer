@@ -109,6 +109,7 @@ def main():
                 identified_file_type = None
                 duplicate_list = None
                 scanned_folder = None
+                duplicate_list = None
 
                 print(folder_path)
             else:
@@ -175,7 +176,7 @@ def main():
                 scanned_data = scan_folder(folder_path)
                 scanned_folder = Path(folder_path).resolve()
 
-            if not identified_file_type:
+            if identified_file_type is None:
                 identified_file_type = None
                 print("Identifying file types...")
                 identified_file_type = scan_file_signiture(scanned_data)
@@ -191,22 +192,22 @@ def main():
             # CONFIRMATION
             user_conformation = None
 
-            try:
-                while True:
+            while True:
+                try:
                     user_conformation = input("Confirm this plan? (y/n): ")
 
                     if user_conformation == "y" or user_conformation == "n":
                         break
 
-            except OSError as error:
-                print(f"Invalid input!: {error}")
+                except OSError as error:
+                    print(f"Invalid input!: {error}")
 
             if user_conformation == "y":
                 for destination, sources in organization_plan.items():
                     for source in sources:
                         move_file(source, destination)
 
-            elif user_choice == "n":
+            elif user_conformation == "n":
                 print("User cancelled the plan.")
 
             else:

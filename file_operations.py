@@ -6,7 +6,11 @@ def move_file(source, destination):
     source = Path(source)
     destination = Path(destination)
 
-    destination.mkdir(parents=True, exist_ok=True)
+    try:
+        destination.mkdir(parents=True, exist_ok=True)
+    except OSError as error:
+        print(f"Error in {destination}: {error}")
+
     target = destination / source.name
 
     try:

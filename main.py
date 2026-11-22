@@ -1,5 +1,4 @@
 from pathlib import Path
-from tkinter import NO
 
 from duplicate_finder import find_dublicate
 from file_identifire import scan_file_signiture
@@ -86,6 +85,25 @@ def show_organization_plan(organization_plan, folder_path):
             print(f"\t{branch} {file.relative_to(Path(folder_path))}")
 
 
+def show_final_report(folder_path, scanned_data, identified_file_type, duplicate_list):
+    print("\n==============================")
+    print("   File Organization Report")
+    print("==============================")
+
+    print(f"Selected Folder: {folder_path}")
+    print(f"Total files: {len(scanned_data)}")
+    # print(f"Status: {status}")
+
+    print()
+    print("File type Breakdown")
+    for file_type, files in identified_file_type.items():
+        print(f"{file_type} files: {len(files)}")
+
+    print()
+    print("Dublicate Information")
+    print(f"Duplicate groups: {len(duplicate_list)}")
+
+
 def main():
     folder_path = None
     scanned_data = None
@@ -126,12 +144,9 @@ def main():
                 scanned_data = scan_folder(folder_path)
                 scanned_folder = Path(folder_path).resolve()
 
+            if identified_file_type is None:
                 print("Identifying file types...")
                 identified_file_type = scan_file_signiture(scanned_data)
-
-            else:
-                if identified_file_type is None:
-                    identified_file_type = scan_file_signiture(scanned_data)
 
             show_scan_report(scanned_data, identified_file_type)
 
@@ -142,7 +157,6 @@ def main():
                 continue
 
             if scanned_data is None or not already_scanned(folder_path, scanned_folder):
-                scanned_data = None
                 print("Scanning the folder...")
                 scanned_data = scan_folder(folder_path)
                 scanned_folder = Path(folder_path).resolve()
@@ -228,7 +242,30 @@ def main():
 
         # OTHER OPTIONS
         elif user_choice == 5:
-            print("Option 5")
+            if not folder_path:
+                print("Select a folder before performing any action.")
+                continue
+
+            if (
+                scanned_data is None
+                or identified_file_type is None
+                or not already_scanned(folder_path, scanned_folder)
+            ):
+                print("Scanning...")
+                scanned_data = scan_folder(folder_path)
+                scanned_folder = Path(folder_path).resolve()
+
+            if identified_file_type is None:
+                print("Identifying file types...")
+                identified_file_type = scan_file_signiture(scanned_data)
+
+            if duplicate_list is None:
+                print("Finding Duplicates...")
+                duplicate_list = find_dublicate(scanned_data)
+
+            show_final_report(
+                folder_path, scanned_data, identified_file_type, duplicate_list
+            )
 
         elif user_choice == 6:
             print("Option 6")

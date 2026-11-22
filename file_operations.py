@@ -10,6 +10,7 @@ def move_file(source, destination):
         destination.mkdir(parents=True, exist_ok=True)
     except OSError as error:
         print(f"Error in {destination}: {error}")
+        return False
 
     target = destination / source.name
 

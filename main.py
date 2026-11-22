@@ -1,4 +1,5 @@
 from pathlib import Path
+from tkinter import NO
 
 from duplicate_finder import find_dublicate
 from file_identifire import scan_file_signiture
@@ -88,7 +89,7 @@ def show_organization_plan(organization_plan, folder_path):
 def main():
     folder_path = None
     scanned_data = None
-    identified_file_type = {}
+    identified_file_type = None
     duplicate_list = None
     scanned_folder = None
 
@@ -109,7 +110,6 @@ def main():
                 identified_file_type = None
                 duplicate_list = None
                 scanned_folder = None
-                duplicate_list = None
 
                 print(folder_path)
             else:
@@ -201,17 +201,30 @@ def main():
 
                 except OSError as error:
                     print(f"Invalid input!: {error}")
+                    break
+            sucessfully_moved = 0
+            failed_to_move = 0
 
             if user_conformation == "y":
                 for destination, sources in organization_plan.items():
                     for source in sources:
-                        move_file(source, destination)
-
-            elif user_conformation == "n":
+                        if move_file(source, destination):
+                            sucessfully_moved += 1
+                            scanned_data = None
+                            identified_file_type = None
+                            duplicate_list = None
+                            scanned_folder = None
+                        else:
+                            print("Failed to move!")
+                            failed_to_move += 1
+            else:
                 print("User cancelled the plan.")
 
-            else:
-                print("Something went wrong! Try again.")
+            print("===============================")
+            print("        Moving Report")
+            print("===============================")
+            print(f"Files successfully moved: {sucessfully_moved}")
+            print(f"Files failed to move: {failed_to_move}")
 
         # OTHER OPTIONS
         elif user_choice == 5:

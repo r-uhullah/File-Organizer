@@ -4,6 +4,9 @@ from duplicate_finder import find_dublicate  # to scan for dublicate files
 from file_identifire import (
     scan_file_signiture,  # to scan for the file extention using signiture
 )
+from file_operations import (
+    move_file,  # to move the file from its source to the destination
+)
 from folder_selector import select_folder  # to show the folder selection window
 from organizer import (
     create_organization_plan,  # to compare the files with the identifies_file_type and create a plan to seprate it into different folders
@@ -59,6 +62,7 @@ def main():
     scanned_data = (
         None  # saving the data that comes from the scanner function (for optimization)
     )
+    duplicate_list = None  # to check if the user has already scanned for dublicates in this folder (Optimization)
     scanned_folder = None  # to check if the user has already scanned the folder he is trying to if yes then scanned_data is used insted of scanning (for optimization)
 
     # keeps showing the menu until the user exits the program
@@ -106,6 +110,14 @@ def main():
                 print("\n==============================")
                 print("        Scanned Report")
                 print("==============================")
+
+                # file.relative_to(folder_path) displays the subfolder too with the file (knowladge)
+                for index, file in enumerate(
+                    scanned_data, start=1
+                ):  # printing all the files in the folder
+                    print(f"{index}. {file.name}")
+                print()
+
                 print(f"Files found: {len(scanned_data)}\n")
 
                 for (
@@ -113,27 +125,23 @@ def main():
                     files,
                 ) in identified_file_type.items():  # showing the file type data
                     print(f"{file_type} files: {len(files)}")
-                print()
-
-                # file.relative_to(folder_path) displays the subfolder too with the file (knowladge)
-                for index, file in enumerate(
-                    scanned_data, start=1
-                ):  # printing all the files in the folder
-                    print(f"{index}. {file.name}")
 
             # not running the scan if this file has already been scanned
             else:
+                if identified_file_type is None:
+                    identified_file_type = scan_file_signiture(scanned_data)
                 print("\n==============================")
                 print("        Scanned Report")
                 print("==============================")
+
+                for index, file in enumerate(scanned_data, start=1):
+                    print(f"{index}. {file.name}")
+                print()
+
                 print(f"Files found: {len(scanned_data)}\n")
 
                 for file_type, files in identified_file_type.items():
                     print(f"{file_type} files: {len(files)}")
-                print()
-
-                for index, file in enumerate(scanned_data, start=1):
-                    print(f"{index}. {file.name}")
 
         # to check for duplicate files in the folder
         elif user_choice == 3:
@@ -146,29 +154,50 @@ def main():
                 scanned_data = scan_folder(folder_path)
                 scanned_folder = Path(folder_path).resolve()
 
-            print("Finding dublicates...")  # Loading message
+            if duplicate_list != None:
+                print("\n==============================")
+                print("      Duplicate Report")
+                print("==============================")
 
-            duplicate_list = find_dublicate(
-                scanned_data
-            )  # storing the data in dublicate_list
-            print("\n==============================")
-            print("      Duplicate Report")
-            print("==============================")
-            print(f"Dublicates found: {len(duplicate_list)}")
+                for index, duplicate in enumerate(
+                    duplicate_list, start=1
+                ):  # looping through the duplicate_list
+                    print(f"{index} :->")
+                    for i, file in enumerate(
+                        duplicate
+                    ):  # looping through each duplicate file in the diplicate_list
+                        clean_path = file.relative_to(folder_path)
 
-            for index, duplicate in enumerate(
-                duplicate_list, start=1
-            ):  # looping through the duplicate_list
-                print(f"{index} :->")
-                for i, file in enumerate(
-                    duplicate
-                ):  # looping through each duplicate file in the diplicate_list
-                    clean_path = file.relative_to(folder_path)
+                        # Use └── for the very last item in the tree, ├── for others
+                        branch = "└──" if i == len(duplicate) - 1 else "├──"
 
-                    # Use └── for the very last item in the tree, ├── for others
-                    branch = "└──" if i == len(duplicate) - 1 else "├──"
+                        print(f"  {branch} {file.name} ({clean_path})")
+                print()
+                print(f"Dublicates found: {len(duplicate_list)}")
+            else:
+                print("Finding duplicates...")
+                duplicate_list = find_dublicate(
+                    scanned_data
+                )  # storing the data in dublicate_list
+                print("\n==============================")
+                print("      Duplicate Report")
+                print("==============================")
 
-                    print(f"  {branch} {file.name} ({clean_path})")
+                for index, duplicate in enumerate(
+                    duplicate_list, start=1
+                ):  # looping through the duplicate_list
+                    print(f"{index} :->")
+                    for i, file in enumerate(
+                        duplicate
+                    ):  # looping through each duplicate file in the diplicate_list
+                        clean_path = file.relative_to(folder_path)
+
+                        # Use └── for the very last item in the tree, ├── for others
+                        branch = "└──" if i == len(duplicate) - 1 else "├──"
+
+                        print(f"  {branch} {file.name} ({clean_path})")
+                print()
+                print(f"Dublicates found: {len(duplicate_list)}")
 
         # to give an orgainzation plan
         elif user_choice == 4:
@@ -216,6 +245,15 @@ def main():
                         break
             except OSError as error:
                 print(f"Invalid input!: {error}")
+
+            if user_conformation == "y":
+                for destination, sources in organization_plan.items():
+                    for source in sources:
+                        move_file(source, destination)
+            elif user_choice == "n":
+                print("User cancelled the plna.")
+            else:
+                print("Something went wrong! Try again.")
 
         elif user_choice == 5:
             print("Option 5")

@@ -1,6 +1,13 @@
 import logging
 from pathlib import Path
 
+from activity_logs import (
+    read_full_log,
+    show_activity_log,
+    view_errors_and_warnings,
+    view_organization_history,
+    view_recent_activity,
+)
 from duplicate_finder import find_dublicate
 from file_identifire import scan_file_signiture
 from file_operations import move_file
@@ -116,6 +123,7 @@ def main():
     identified_file_type = None
     duplicate_list = None
     scanned_folder = None
+    log_data = read_full_log()
 
     while True:
         user_choice = show_menu()
@@ -278,7 +286,18 @@ def main():
             print("Option 6")
 
         elif user_choice == 7:
-            print("Option 7")
+            activity_choice = show_activity_log()
+
+            if activity_choice == 0:
+                continue
+            elif activity_choice == 1:
+                view_recent_activity()
+            elif activity_choice == 2:
+                view_errors_and_warnings(log_data)
+            elif activity_choice == 3:
+                view_organization_history(log_data)
+            elif activity_choice == 4:
+                print("Comming Soon")
 
 
 if __name__ == "__main__":
